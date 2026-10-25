@@ -1,0 +1,59 @@
+# Branch flow: your branch → pull request into dev → the designated teammate merges dev into master (submission).
+# Runs on every push to dev or master, and on every pull request into dev or master.
+# Branch names are case-sensitive: if your submit branch is "MASTER", change "master" below to match.
+name: CI
+
+on:
+  push:
+    branches: [dev, master]
+  pull_request:
+    branches: [dev, master]
+
+# Saves Actions minutes (private repo: the organization's monthly allowance is shared by all its repos).
+# A newer push to the same branch or pull request cancels the older, now-outdated run.
+# Runs on master are never cancelled, so every submission commit gets a full check.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies (exactly as in package-lock.json)
+        run: npm ci
+
+      - name: Invariant checks (zero-transaction, boundaries, secrets, Server Action auth)
+        run: node .claude/hooks/invariants.mjs --all
+
+      - name: Invariant checker tests
+        run: node --test .claude/hooks/invariants.test.mjs
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (also type-checks)
+        run: npm run build
+
+  secrets:
+    # Runs the open-source gitleaks CLI directly on GitHub's runner (no license needed, nothing to install
+    # locally). Scans the files in this commit; it does NOT scan older git history.
+    # TODO after the first green run: replace "latest" with the current version tag (e.g. v8.x.x) so an
+    # upstream release can't break CI unexpectedly.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Scan for secrets (gitleaks)
+        run: >
+          docker run --rm -v "${{ github.workspace }}:/repo"
+          zricethezav/gitleaks:latest dir /repo --redact --verbose

@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (from Figma "Local WebBlock UI"). Components use these via Tailwind classes — never raw hex.
+ * Names follow shadcn/ui (background, foreground, muted, muted-foreground, input, ring, destructive…)
+ * so components added with `npx shadcn add` pick them up without edits.
+ */
+@theme {
+  /* Surfaces & text */
+  --color-background: #ffffff;
+  --color-foreground: #1b2b4b; /* Figma text-primary */
+  --color-foreground-soft: #33486f; /* Figma text-secondary: ghost buttons, pagination */
+  --color-muted: #f6f9fe; /* table header, subtle fills */
+  --color-muted-foreground: #5a6b8c; /* Figma text-muted: secondary text */
+  --color-placeholder: #7c8dae;
+  --color-surface: #f9fafb;
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #4379d6;
+
+  /* Accent: page titles, links, active sort, focus ring */
+  --color-primary: #4379d6;
+  --color-primary-foreground: #ffffff;
+  --color-primary-soft: #eef4fd;
+
+  /* Brand fills: primary button, active page */
+  --color-brand: #2f6bc4;
+  --color-brand-strong: #2a5fbd; /* text on brand-soft */
+  --color-brand-dark: #0936c3;
+  --color-brand-soft: #e3eefc;
+
+  /* Status */
+  --color-success: #1e8a5a;
+  --color-success-soft: #e6f5ec;
+  --color-warning: #d97706;
+  --color-danger: #cc3d3d;
+  --color-danger-soft: #fce8e8;
+  --color-destructive: #cc3d3d;
+
+  /* Shadows (blue-tinted, from Figma effects) */
+  --shadow-button: 0 1px 1px rgb(60 120 207 / 0.06), 0 1px 0.5px rgb(60 120 207 / 0.04);
+  --shadow-button-hover: 0 4px 10px rgb(47 107 196 / 0.18), 0 1px 2px rgb(47 107 196 / 0.1);
+  --shadow-card: 5px 6px 12px rgb(60 120 207 / 0.05);
+  --shadow-page-active: 0 4px 5px rgb(47 107 196 / 0.28);
+
+  /* Page content inset from the sidebar and the right edge. */
+  --spacing-page: 15px;
+
+  --animate-toast-in: toast-in 200ms ease-out;
+  --animate-row-in: row-in 240ms ease-out both;
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Font variables are set by next/font on <html> in the root layout. */
+@theme inline {
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-familjen-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+  }
+}
